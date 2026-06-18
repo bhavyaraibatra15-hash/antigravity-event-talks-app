@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sleek and interactive BigQuery Release Notes explorer. Read, search, filter, and share updates on X (Twitter).">
+    <title>BigQuery Release Notes Explorer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2306b6d4'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-grid"></div>
+
+    <!-- SVG Icon Sprite -->
+    <svg style="display: none;">
+        <!-- Refresh Icon -->
+        <g id="icon-refresh">
+            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </g>
+        <!-- Twitter / X Icon -->
+        <g id="icon-x">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </g>
+        <!-- Search Icon -->
+        <g id="icon-search">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </g>
+        <!-- Copy Icon -->
+        <g id="icon-copy">
+            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </g>
+        <!-- Checkmark Icon -->
+        <g id="icon-check">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </g>
+        <!-- Link External Icon -->
+        <g id="icon-external">
+            <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41 9.83-9.83V9h2V3h-8z"/>
+        </g>
+        <!-- Database/BigQuery Icon -->
+        <g id="icon-database">
+            <path d="M12 2C6.48 2 2 4.02 2 6.5v11c0 2.48 4.48 4.5 10 4.5s10-2.02 10-4.5v-11C22 4.02 17.52 2 12 2zm0 18c-4.42 0-8-1.57-8-3.5V15c0 1.93 3.58 3.5 8 3.5s8-1.57 8-3.5v1.5c0 1.93-3.58 3.5-8 3.5zm0-4.5c-4.42 0-8-1.57-8-3.5V10c0 1.93 3.58 3.5 8 3.5s8-1.57 8-3.5v1.5c0 1.93-3.58 3.5-8 3.5zm0-4.5c-4.42 0-8-1.57-8-3.5S7.58 4 12 4s8 1.57 8 3.5S16.42 11 12 11z"/>
+        </g>
+        <!-- Info Icon -->
+        <g id="icon-info">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </g>
+        <!-- Filter Icon -->
+        <g id="icon-filter">
+            <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+        </g>
+    </svg>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="logo-svg">
+                    <rect width="24" height="24" rx="6" fill="url(#logo-grad)"/>
+                    <circle cx="12" cy="12" r="6" fill="#0b0f19" />
+                    <circle cx="12" cy="12" r="3" fill="url(#logo-accent)" />
+                    <defs>
+                        <linearGradient id="logo-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#3b82f6"/>
+                            <stop offset="1" stop-color="#06b6d4"/>
+                        </linearGradient>
+                        <linearGradient id="logo-accent" x1="9" y1="9" x2="15" y2="15" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#06b6d4"/>
+                            <stop offset="1" stop-color="#10b981"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="header-titles">
+                    <h1>BigQuery</h1>
+                    <p>Release Notes Explorer</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-val" id="stat-total">-</span>
+                    <span class="stat-lbl">Total</span>
+                </div>
+                <div class="stat-item divider"></div>
+                <div class="stat-item">
+                    <span class="stat-val text-cyan" id="stat-features">-</span>
+                    <span class="stat-lbl">Features</span>
+                </div>
+                <div class="stat-item divider"></div>
+                <div class="stat-item">
+                    <span class="stat-val text-amber" id="stat-announcements">-</span>
+                    <span class="stat-lbl">Announcements</span>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <span class="sync-time" id="sync-time">Loading...</span>
+                <button class="btn btn-primary btn-refresh" id="btn-refresh" title="Refresh Release Notes">
+                    <svg class="icon icon-spin-target" viewBox="0 0 24 24"><use href="#icon-refresh"></use></svg>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Filter Bar -->
+            <section class="filter-section">
+                <div class="search-wrapper">
+                    <svg class="icon search-icon" viewBox="0 0 24 24"><use href="#icon-search"></use></svg>
+                    <input type="text" id="search-input" placeholder="Search release notes by keywords, tags, or dates..." autocomplete="off">
+                    <button class="clear-search" id="clear-search" style="display: none;">&times;</button>
+                </div>
+
+                <div class="filter-controls">
+                    <div class="filter-label">
+                        <svg class="icon" viewBox="0 0 24 24"><use href="#icon-filter"></use></svg>
+                        <span>Filter Category:</span>
+                    </div>
+                    <div class="filter-pills" id="category-pills">
+                        <button class="pill active" data-category="all">All</button>
+                        <button class="pill" data-category="feature">Features</button>
+                        <button class="pill" data-category="announcement">Announcements</button>
+                        <button class="pill" data-category="issue">Issues</button>
+                        <button class="pill" data-category="deprecation">Deprecations</button>
+                        <button class="pill" data-category="general">General</button>
+                    </div>
+                    
+                    <div class="sort-wrapper">
+                        <select id="sort-select">
+                            <option value="desc">Newest First</option>
+                            <option value="asc">Oldest First</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Warnings/Errors banner -->
+            <div id="api-warning" class="alert-banner" style="display: none;">
+                <svg class="icon" viewBox="0 0 24 24"><use href="#icon-info"></use></svg>
+                <span id="api-warning-text"></span>
+                <button class="close-alert" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+
+            <!-- Release Notes Stream -->
+            <section class="timeline-container">
+                <!-- Loading State -->
+                <div class="loading-state" id="loading-state">
+                    <div class="double-ring-spinner">
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <p>Fetching BigQuery release notes feed...</p>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <svg viewBox="0 0 24 24" class="empty-icon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    <h3>No matching release notes found</h3>
+                    <p>Try refining your search keywords or switching categories.</p>
+                </div>
+
+                <!-- Feed Timeline -->
+                <div class="timeline" id="timeline" style="display: none;">
+                    <!-- Timelines blocks will be injected here by app.js -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>BigQuery Release Notes Explorer &copy; 2026. Data fetched dynamically from the official Google Cloud RSS feed.</p>
+            <div class="footer-links">
+                <a href="https://docs.cloud.google.com/bigquery/docs/release-notes" target="_blank" rel="noopener noreferrer">
+                    Official Docs <svg class="icon-inline" viewBox="0 0 24 24"><use href="#icon-external"></use></svg>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Twitter Composer Modal -->
+    <div class="modal-overlay" id="tweet-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Pre-compose Tweet</h3>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Context block -->
+                <div class="update-preview-context">
+                    <span class="preview-badge" id="preview-category">Feature</span>
+                    <span class="preview-date" id="preview-date">June 17, 2026</span>
+                    <div class="preview-text" id="preview-text">Selected update content text...</div>
+                </div>
+
+                <!-- Tweet Edit Area -->
+                <div class="composer-container">
+                    <label for="tweet-textarea">Customize your post for X (Twitter):</label>
+                    <textarea id="tweet-textarea" rows="6" maxlength="500" placeholder="What's happening?"></textarea>
+                    
+                    <div class="composer-meta">
+                        <button class="btn btn-secondary btn-sm" id="btn-shorten-tweet" title="Auto-format and trim to fit 280 character limit">
+                            <span>Auto-Trim to 280</span>
+                        </button>
+                        <div class="char-counter" id="char-counter">0 / 280</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-tweet">Cancel</button>
+                <button class="btn btn-twitter" id="btn-publish-tweet">
+                    <svg class="icon" viewBox="0 0 24 24"><use href="#icon-x"></use></svg>
+                    <span>Tweet now</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- App JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
